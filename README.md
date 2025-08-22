@@ -1,26 +1,38 @@
-# Post-Connection-Attacks Info Gathering & MITM 
+# Info Gathering & MITM Attack
 
 ## Objective
 
-The objective is to gather as much information as possible on the devices connected to the target network, like MAC addresses, IP addresses, their operating system, open ports and services that are running on those ports. The second objective is to perform a MITM attack (Man in the middle) in a sanbox environment. This places the attack linux computer in the middle of the connection between the windows virtual machine and the accesspoint. The goal is to impersonate the target machine so the access point thinks the attack linux is the windows machine and the windows machine thinks the attack linux is the access point using ARP spoofing. 
+The primary objective was to gather detailed information on devices connected to the target network, including MAC addresses, IP addresses, operating systems, open ports, and the services running on those ports. The secondary objective was to perform a Man-in-the-Middle (MITM) attack in a sandbox environment. This involved positioning the attacking Linux machine between the Windows virtual machine and the access point, using ARP spoofing to impersonate the target machine—causing the access point to recognize the attacker as the Windows machine and the Windows machine to recognize the attacker as the access point.
 
 ### Skills Learned
 
-- Using netdiscover & zenmap GUI to discover targets connected to a network.
-- Reading ARP tables.
-- Use of the bettercap module to create ARP spoofing attacks, run DNS spoofing, and hsts hijacking (downgrading https to http).
-- Writing custom spoofing scripts and caplets.
-- Proficiency in the use of network analysing tools like wireshark.
-- Ability to generate and recognize attack signatures and patterns.
-- Enhanced knowledge of network protocols and security vulnerabilities.
+- Network discovery using tools such as Netdiscover and Zenmap GUI.
+
+- Analysis and interpretation of ARP tables for network mapping.
+
+- Execution of ARP spoofing attacks and HSTS hijacking using the Bettercap module.
+
+- Development of custom spoofing scripts and caplets for attack automation.
+
+- Proficiency with network analysis tools like Wireshark for packet inspection.
+
+- Ability to identify and generate attack signatures and patterns.
+
+- Strong understanding of network protocols and common security vulnerabilities.
+
+- Knowledge of best practices for network security and protection.
 
 ### Tools Used
 
-- VMware Fusion
-- Kali linux and Windows 11 machines
-- Network scanning tools like Netdiscover and Zenmap.
-- ARP spoofing tool module BETTERCAP, used for network probing, https bypass, dns spoofing, and code injection.
-- Wireshark for analysing packets and captured traffic.
+- VMware Fusion 13.6: Virtualization platform for lab environment setup.
+
+- Kali Linux and Windows 11: Virtual machines for attack and target systems.
+
+- Netdiscover and Zenmap: Network scanning tools for target discovery and information gathering.
+
+- BETTERCAP: Used for ARP spoofing, network probing, and HTTPS bypass.
+
+- Wireshark: For packet capture and traffic analysis.
   
 ## Steps
 
@@ -64,6 +76,7 @@ In this step, the "net.probe on" command was executed to probe the network for a
 I set the parameters of the arp.spoof module to the following:
 
 "set arp.spoof.fullduplex true". If this is set to true, both the target and the gateway (access point) will be attacked. 
+
 "set arp.spoof.targets 172.16.108.133". The target is set to the IP of the target windows computer.
 
 
@@ -94,7 +107,7 @@ Next, packet sniffing was initiated using "net.sniff" to capture and analyze net
 *Ref 9: Packet Sniffing Initiated* <img width="1470" height="246" alt="Screenshot 2025-08-19 at 9 20 17 PM" src="https://github.com/user-attachments/assets/70ebf254-4e41-417b-8e44-7eb9a1b70921" />
 
 
-N/B: This step proved that the MITM attack worked succesfully but i was not done yet. I still has to make the process faster and cleaner and also to downgrade the https connection, and enable dns spoofing.
+N/B: This step proved that the MITM attack worked succesfully but i was not done yet. I still had to make the process faster and cleaner and also to downgrade the https connection, and enable dns spoofing.
 
 
 
@@ -114,7 +127,7 @@ In this step, I created a custom spoofing script/caplet using the text editor on
 
 
 
-- STEP 7 Downgrading HTTPS CConnection to HTTP 
+- STEP 8 Downgrading HTTPS Connection to HTTP 
 
 I found and modified Bettercap’s hstshijack caplet to improve its functionality and extend support to additional websites such as Netflix, Stack Overflow, and LinkedIn. After the modifications, I executed the hstshijack command and enabled SSL stripping to intercept and manipulate HTTPS traffic.
 
@@ -129,9 +142,9 @@ I found and modified Bettercap’s hstshijack caplet to improve its functionalit
 
 
 
-- STEP 8  Proof of Successful SSL Striping
+- STEP 9  Proof of Successful SSL Striping
 
-After executing the hstshijack caplet, i proceeded to the windows target machine and searched spoofed sites like, stackoverflow.com and netflix.com. THese sites where successfully downgraded to http connections as seen in (Ref 16, 17 & 18).
+After executing the hstshijack caplet, I proceeded to the windows target machine and searched spoofed sites like, stackoverflow.com and netflix.com. These sites where successfully downgraded to http connections as seen in (Ref 16, 17 & 18).
 
 
 *Ref 16: Successful Downgrade LinkedIn* <img width="1470" height="956" alt="Screenshot 2025-08-20 at 4 19 14 PM" src="https://github.com/user-attachments/assets/e7d39f14-a16a-4a0c-8d84-7681e6256ce9" />
@@ -147,7 +160,7 @@ After executing the hstshijack caplet, i proceeded to the windows target machine
 
 
 
-- STEP 9  Using Wireshark to Analyse Captured Packets
+- STEP 10  Using Wireshark to Analyse Captured Packets
 
 In this step, Wireshark was launched after executing the hstshijack caplet to capture network packets. A HTTP filter was then applied to isolate and analyze only the captured HTTP traffic.
 
@@ -160,7 +173,7 @@ In this step, Wireshark was launched after executing the hstshijack caplet to ca
 
 
 
-- STEP 10  Analysing Captured packets
+- STEP 11  Analysing Captured packets
 
 I analyzed the captured packets by isolating HTTP POST requests, which are typically used to transmit form data such as login credentials. From this traffic, I was able to identify plaintext usernames and passwords entered on the target websites, confirming the success of the interception. 
 
@@ -183,5 +196,5 @@ Download link - https://softfamous.com/xarp/
 
 ### Mitigation
 
-To prevent MITM attacks, I recommend using a VPN with HTTPS enforcement tools like HTTPS Everywhere. This combination encrypts network traffic and ensures secure connections, providing a double layer of protection against interception.
+To prevent MITM attacks, I recommend using a VPN with HTTPS enforcement tools like HTTPS Everywhere browser extension. This combination encrypts network traffic and ensures secure connections, providing a double layer of protection against interception.
 
